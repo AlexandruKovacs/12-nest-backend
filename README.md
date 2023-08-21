@@ -43,6 +43,12 @@ $ npm run start:dev
 
 # production mode
 $ npm run start:prod
+
+# bbdd
+$ docker compose up -d
+
+# Copiar el .env.template
+
 ```
 
 ## Test
