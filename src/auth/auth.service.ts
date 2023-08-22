@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 
 import { CreateUserDto } from './dto/create-user.dto';
@@ -7,6 +7,7 @@ import { User } from './entities/user.entity';
 import { Model } from 'mongoose';
 
 import * as bcrytjs from 'bcryptjs';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -45,6 +46,37 @@ export class AuthService {
 
   findAll() {
     return `This action returns all auth`;
+  }
+
+  async login(loginDto: LoginDto) {
+
+    const { email, password } = loginDto;
+
+    // 1. Verificar que el email exista en la BD
+    const user = await this.userModel.findOne({ email });
+
+    if( !user ) {
+      throw new UnauthorizedException('Credenciales inválidas');
+    }
+
+    // 2. Verificar que el password sea correcto
+    const isMatch = bcrytjs.compareSync( password, user.password );
+
+    if( !isMatch ) {
+      throw new UnauthorizedException('Credenciales inválidas');
+    }
+
+    const { password:_, ...userWithoutPassword } = user.toJSON();
+
+    return {
+      user: userWithoutPassword,
+      message: 'Login exitoso',
+      token: 'ABC123',
+    }
+
+    // User -> email, password
+    // Token -> JWT
+
   }
 
   findOne(id: number) {
