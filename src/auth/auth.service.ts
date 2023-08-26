@@ -70,14 +70,14 @@ export class AuthService {
     const user = await this.userModel.findOne({ email });
 
     if( !user ) {
-      throw new UnauthorizedException('Credenciales inválidas');
+      throw new UnauthorizedException('Credenciales inválidas - email');
     }
 
     // 2. Verificar que el password sea correcto
     const isMatch = bcrytjs.compareSync( password, user.password );
 
     if( !isMatch ) {
-      throw new UnauthorizedException('Credenciales inválidas');
+      throw new UnauthorizedException('Credenciales inválidas - password');
     }
 
     const { password:_, ...userWithoutPassword } = user.toJSON();
