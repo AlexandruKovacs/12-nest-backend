@@ -47,8 +47,8 @@ export class AuthService {
 
   }
 
-  findAll() {
-    return `This action returns all auth`;
+  findAll(): Promise<User[]> {
+    return this.userModel.find().exec();
   }
 
   async register( registerUserDto: RegisterUserDto): Promise<LoginResponse> {
@@ -89,6 +89,12 @@ export class AuthService {
 
   }
 
+  async findUserById( id: string ) {
+    const user = await this.userModel.findById( id ).exec();
+    const { password, ...rest } = user.toJSON();
+    return rest;
+  }
+
   findOne(id: number) {
     return `This action returns a #${id} auth`;
   }
@@ -104,6 +110,10 @@ export class AuthService {
   getJwtToken( payload: JwtPayload ) {
     const token = this.jwtService.sign( payload );
     return token;
+  }
+
+  checkToken() {
+    return { message: 'Ok' };
   }
 
 
